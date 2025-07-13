@@ -1,5 +1,7 @@
 import Foundation
 import Network
+import UIKit
+import SwiftUI
 
 // MARK: - API Models
 struct EmployeeData: Codable {
@@ -125,6 +127,28 @@ class AppState: ObservableObject {
     @Published var selectedLanguage: Language = .english
     @Published var isDarkMode: Bool = false
     @Published var formRefreshTrigger: UUID = UUID() // Add this to force form re-rendering
+    
+    init() {
+        // Set initial color scheme based on system settings
+        if #available(iOS 13.0, *) {
+            DispatchQueue.main.async {
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let window = windowScene.windows.first {
+                    self.isDarkMode = window.traitCollection.userInterfaceStyle == .dark
+                } else {
+                    // Fallback to default trait collection
+                    self.isDarkMode = UITraitCollection.current.userInterfaceStyle == .dark
+                }
+            }
+        } else {
+            self.isDarkMode = false
+        }
+    }
+    
+    // Function to update based on system color scheme
+    func updateFromSystemColorScheme(_ colorScheme: ColorScheme) {
+        self.isDarkMode = colorScheme == .dark
+    }
     
     enum Language: String, CaseIterable {
         case english = "en"

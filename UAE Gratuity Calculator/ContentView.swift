@@ -14,6 +14,7 @@ struct ContentView: View {
     @StateObject private var localization = LocalizationManager()
     @StateObject private var apiService = APIService.shared
     @StateObject private var networkMonitor = NetworkMonitor()
+    @Environment(\.colorScheme) private var systemColorScheme
     
     var body: some View {
         NavigationView {
@@ -117,6 +118,8 @@ struct ContentView: View {
             .navigationBarHidden(true)
             .preferredColorScheme(appState.isDarkMode ? .dark : .light)
             .onAppear {
+                // Set initial color scheme based on system setting
+                appState.updateFromSystemColorScheme(systemColorScheme)
                 loadConfiguration()
                 localization.setLanguage(appState.selectedLanguage)
             }
